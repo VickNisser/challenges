@@ -1,5 +1,6 @@
+'use strict'
 function getArray(){
-    getMovies = new XMLHttpRequest();
+    var getMovies = new XMLHttpRequest();
     getMovies.open("GET",'http://test.competa.com/js-movies-test/data/movies-json.php',false);
     getMovies.send(null);
     return getMovies.responseText;
@@ -8,46 +9,52 @@ function getArray(){
 var movielist = JSON.parse(getArray());
 var movieAssets = movielist.data[0].assets;
 var actionMovies = [];
-var slideshowSection = document.getElementsByClassName("slideshow");
 var slideshowImg = document.getElementById("slideshow-image").src;
-var movieInfoDisplay = document.getElementById("movie-info");
+var movieInfoDisplay = document.getElementsByClassName("movie-info");
+var currentIndex;
 
+console.log(slideshowImg);
 function getActionMovies(){
-     for (var i = 0; i < movieAssets.length; i++){
-        if(movieAssets[i].genre === "Action"){
-            actionMovies.push(movieAssets[i]);
-        }
-    }
+    for (var i = 0; i < movieAssets.length; i++){
+       if(movieAssets[i].genre === "Action"){
+           actionMovies.push(movieAssets[i]);
+       }
+   }
 }
 
-document.onkeydown = (function(e){
-    e = e || window.event;
-    switch(e.keycode){
+document.onkeydown = (function(ev){
+    ev = ev || window.event;
+    switch(ev.keyCode){
         case 37:
         getPrevImage(slideshowImg);
-        printInfo();
+        printInfo(slideshowImg);
         break;
         case 39:
         getNextImage(slideshowImg);
-        printInfo();
+        printInfo(slideshowImg);
         break;
     }
 });
 
-function checkIndex(src){
-     return src = slideshowImg;
+function getNextImage(currimgsrc){
+    currentIndex = actionMovies.indexOf(currimgsrc).img;
+    slideshowImg = actionMovies[currentIndex + 1].img;
+    return slideshowImg;
 }
 
-function getNextImage(src){
-    
+function getPrevImage(currimgsrc){
+    currentIndex = actionMovies.indexOf(currimgsrc);
+    if(currentIndex == 0){
+        slideshowImg = actionMovies[actionMovies.length].img;
+    }
+    else{
+        slideshowImg = actionMovies[currentIndex - 1].img;
+    }
+    return slideshowImg;
 }
 
-function getPrevImage(src){
-
-}
-
-function printInfo(){
-    switch(slideshowImg){
+function printInfo(img){
+    switch(img){
         case "http://test.competa.com/js-movies-test/data/images/box_avatar.png":
         movieInfoDisplay = "Title: Avatar Genre: Action imdb rating: 5,7";
         break;
@@ -59,5 +66,6 @@ function printInfo(){
         break;
     }
 }
-
-printInfo();
+getActionMovies();
+printInfo(slideshowImg);
+console.log(actionMovies);
